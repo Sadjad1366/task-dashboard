@@ -2,13 +2,19 @@
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { Button, Container, Paper, TextField, Typography } from "@mui/material";
+import {
+  Button,
+  Container,
+  Paper,
+  TextField,
+  Typography,
+  InputAdornment,
+} from "@mui/material";
+import { Email, Lock } from "@mui/icons-material";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginFormData, loginSchema } from "@/utils/validation/loginSchema";
-
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,7 +24,7 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm<loginFormData>({
-    resolver: zodResolver(loginSchema)
+    resolver: zodResolver(loginSchema),
   });
 
   const onSubmit = async (data: loginFormData) => {
@@ -35,6 +41,7 @@ export default function LoginPage() {
       router.push("/dashboard");
     }
   };
+
   return (
     <Container
       maxWidth="sm"
@@ -49,21 +56,42 @@ export default function LoginPage() {
           className="flex flex-col gap-y-4"
         >
           <TextField
-            label="email"
-            variant="outlined"
             fullWidth
+            type="email"
+            label="Email"
+            variant="outlined"
+            placeholder="example@example.com"
+            error={!!errors?.email}
+            helperText={errors?.email?.message}
             {...register("email")}
-            error={!!errors.email?.message}
-            helperText={errors.email?.message}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Email />
+                  </InputAdornment>
+                ),
+              },
+            }}
           />
           <TextField
-            label="password"
-            variant="outlined"
-            type="password"
             fullWidth
+            type="password"
+            label="Password"
+            variant="outlined"
+            placeholder="Enter password"
+            error={!!errors?.password?.message}
+            helperText={errors?.password?.message}
             {...register("password")}
-            error={!!errors.password}
-            helperText={errors.password?.message}
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Lock />
+                  </InputAdornment>
+                ),
+              },
+            }}
           />
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Enter
