@@ -33,7 +33,7 @@ export async function PUT(req:NextRequest, {params}: Params) {
   return NextResponse.json(updatedTask)
 }
 
-// [DELETE] حذف یک تسک
+// [DELETE] DELETE TASK
 export async function DELETE(req: NextRequest, { params }: Params) {
       const session = await auth();
       if (!session) {
