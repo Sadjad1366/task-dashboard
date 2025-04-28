@@ -2,13 +2,13 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-      secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET,
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email"},
-        password: { label: "Password", type: "password"},
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         // validation
@@ -34,7 +34,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   pages: {
-    signIn: "/login", // ridirect to loginPage if the user doens't logged in
+    signIn: "/login", // redirect to loginPage if the user doens't logged in
   },
   callbacks: {
     async jwt({ token, user }) {
