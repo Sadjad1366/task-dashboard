@@ -1,5 +1,9 @@
+// ==================== auth.ts ====================
+export const runtime = "nodejs";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { compare } from "bcryptjs";
+import { prisma } from "@/lib/prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET,
@@ -11,34 +15,40 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // validation
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
-        // test data
-        if (
-          credentials.email === "admin@test.com" &&
-          credentials.password === "123456"
-        ) {
-          return {
-            id: "1",
-            name: "Admin User",
-            email: "admin@test.com",
-            role: "admin",
-          };
+        const email = credentials.email as string;
+        const password = credentials.password as string;
+
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
+
+        if (!user || !user.password) {
+          return null;
         }
 
-        return null;
-      },
+        const isValidPassword = await compare(password, user.password);
+        if (!isValidPassword) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        };
+      }
     }),
   ],
   pages: {
-    signIn: "/login", // redirect to loginPage if the user doens't logged in
+    signIn: "/login",
   },
   callbacks: {
     async jwt({ token, user }) {
-      // Add role to token
       if (user) {
         token.id = user.id;
         token.role = (user as any).role;
@@ -46,9 +56,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      // Add role to session
-      if (token?.role && session.user) {
-        (session.user as any).id = token.id; 
+      if (token && session.user) {
+        (session.user as any).id = token.id;
         (session.user as any).role = token.role;
       }
       return session;

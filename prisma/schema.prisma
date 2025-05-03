@@ -13,6 +13,7 @@ model User {
   email     String   @unique
   password  String?
   tasks     Task[]
+  role      String   @default("user")
 }
 
 model Task {

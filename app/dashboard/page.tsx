@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import { Container, Typography, Button } from "@mui/material";
 import DashboardContent from "@/components/DashboardContent";
@@ -22,7 +22,7 @@ export default async function DashboardPage() {
 
       <form action={async () => {
         "use server";
-        // بعدا signOut اضافه میکنیم
+        await signOut();
       }}>
         <Button type="submit" variant="contained" color="secondary">
           Logout
